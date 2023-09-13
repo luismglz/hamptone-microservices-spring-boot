@@ -39,16 +39,15 @@ public class SecurityConfig {
         authenticationManagerBuilder.inMemoryAuthentication()
                 .withUser(SECURE_KEY_USERNAME)
                 .password(new BCryptPasswordEncoder().encode(SECURE_KEY_PASSWORD))
-                .authorities(AuthorityUtils.commaSeparatedStringToAuthorityList("ADMIN"))
+                .authorities(AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_ADMIN"))
                 .and()
                 .withUser(SECURE_KEY_USERNAME_2)
                 .password(new BCryptPasswordEncoder().encode(SECURE_KEY_PASSWORD_2))
-                .authorities(AuthorityUtils.commaSeparatedStringToAuthorityList("DEV"))
+                .authorities(AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_DEV"))
                 .and()
                 .passwordEncoder(new BCryptPasswordEncoder());
 
-        http.securityMatchers((matchers) -> matchers
-                        .requestMatchers("/**"))
+        http.securityMatcher("/**")
                 .authorizeHttpRequests((authorize) -> authorize
                         .anyRequest()
                         .hasRole("ADMIN")

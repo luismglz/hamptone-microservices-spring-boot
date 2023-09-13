@@ -1,7 +1,9 @@
 package com.ruisu.hamptonemicroservicelisting.service;
 
+import com.ctc.wstx.shaded.msv_core.driver.textui.Debug;
 import com.ruisu.hamptonemicroservicelisting.model.Listing;
 import com.ruisu.hamptonemicroservicelisting.repository.ListingRepository;
+import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

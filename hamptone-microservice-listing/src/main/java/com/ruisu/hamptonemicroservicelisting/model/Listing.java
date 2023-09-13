@@ -29,6 +29,12 @@ public class Listing {
     @Column(name = "size", nullable = false)
     private Double size;
 
+    @Column(name = "is_rent", nullable = false)
+    private Boolean isRent;
+
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 }
