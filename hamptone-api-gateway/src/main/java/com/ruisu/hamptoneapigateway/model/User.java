@@ -16,20 +16,23 @@ public class User {
     @Column(name = "username", unique = true, nullable = false, length = 40)
     private String username;
 
-    @Column(name = "password",nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Column(name = "firstname", nullable = false)
-    private  String firstname;
+    private String firstname;
 
     @Column(name = "lastname", nullable = false)
-    private  String lastname;
+    private String lastname;
 
-    @Column(name= "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
+
+    @Transient
+    private String token;
 
 }
