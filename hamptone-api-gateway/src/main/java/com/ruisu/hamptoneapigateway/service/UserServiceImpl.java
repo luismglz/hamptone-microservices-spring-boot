@@ -3,6 +3,7 @@ package com.ruisu.hamptoneapigateway.service;
 import com.ruisu.hamptoneapigateway.model.Role;
 import com.ruisu.hamptoneapigateway.model.User;
 import com.ruisu.hamptoneapigateway.repository.UserRepository;
+import com.ruisu.hamptoneapigateway.security.jwt.JwtProvider;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,12 +21,20 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwtProvider jwtProvider;
+
     @Override
     public User saveUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(Role.USER);
         user.setCreatedAt(LocalDateTime.now());
-        return userRepository.save(user);
+        User userCreated = userRepository.save(user);
+
+        String jwt = jwtProvider.generateToken(userCreated);
+        userCreated.setToken(jwt);
+
+        return userCreated;
     }
 
     @Override

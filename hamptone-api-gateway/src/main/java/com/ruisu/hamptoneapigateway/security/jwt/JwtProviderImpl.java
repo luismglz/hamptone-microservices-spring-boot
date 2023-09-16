@@ -1,5 +1,6 @@
 package com.ruisu.hamptoneapigateway.security.jwt;
 
+import com.ruisu.hamptoneapigateway.model.User;
 import com.ruisu.hamptoneapigateway.security.UserPrincipal;
 import com.ruisu.hamptoneapigateway.utils.SecurityUtils;
 import io.jsonwebtoken.Claims;
@@ -40,6 +41,19 @@ public class JwtProviderImpl implements JwtProvider {
 
         return Jwts.builder().setSubject(user.getUsername())
                 .claim("roles", authorities)
+                .claim("userId", user.getId())
+                .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION_IN_MS))
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+    }
+
+    @Override
+    public String generateToken(User user) {
+
+        Key key = Keys.hmacShaKeyFor(JWT_SECRET.getBytes(StandardCharsets.UTF_8));
+
+        return Jwts.builder().setSubject(user.getUsername())
+                .claim("roles", user.getRole())
                 .claim("userId", user.getId())
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION_IN_MS))
                 .signWith(key, SignatureAlgorithm.HS512)
