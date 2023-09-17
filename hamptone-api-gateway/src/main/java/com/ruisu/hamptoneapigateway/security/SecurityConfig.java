@@ -1,9 +1,12 @@
 package com.ruisu.hamptoneapigateway.security;
 
+import com.ruisu.hamptoneapigateway.model.Role;
 import com.ruisu.hamptoneapigateway.security.jwt.JwtAuthorizationFilter;
+import feign.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -41,17 +44,29 @@ public class SecurityConfig {
 
         AuthenticationManager authenticationManager = auth.build();
 
-        http.securityMatcher("/api/auth/sign-in", "/api/auth/sign-up")
-                .authorizeHttpRequests((authorize) -> authorize
-                        .anyRequest()
-                        .permitAll())
+        http.cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authenticationManager(authenticationManager)
+                .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+
+        http
+                .securityMatcher("/api/auth/sign-in", "/api/auth/sign-up")
+                .authorizeHttpRequests((authorizeConfig) -> authorizeConfig
+                        .anyRequest()
+                        .permitAll())
+                .securityMatcher("/gateway/listing")
+                .authorizeHttpRequests((authorizeConfig) -> authorizeConfig
+                        .requestMatchers(HttpMethod.GET)
+                        .permitAll())
+                .securityMatcher("/gateway/listing/**")
+                .authorizeHttpRequests((authorizeConfig) -> authorizeConfig
+                        .anyRequest().hasRole(Role.ADMIN.name())
+                        .anyRequest().authenticated()
+                )
                 .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement((sessionManagement ->
-                                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                        )
-                );
+                .authenticationManager(authenticationManager);
+
         return http.build();
     }
 
