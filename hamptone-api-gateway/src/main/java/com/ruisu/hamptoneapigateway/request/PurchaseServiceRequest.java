@@ -10,7 +10,7 @@ import java.util.List;
 
 @FeignClient(
         value = "purchase-service",
-        path = "api/purchase",
+        path = "/api/purchase",
         url = "${purchase.service.url}",
         configuration = FeignConfiguration.class)
 public interface PurchaseServiceRequest {
