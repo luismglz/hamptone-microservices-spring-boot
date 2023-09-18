@@ -6,6 +6,7 @@ import com.ruisu.hamptoneapigateway.repository.UserRepository;
 import com.ruisu.hamptoneapigateway.security.jwt.JwtProvider;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -46,5 +47,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public void changeRole(Role newRole, String username) {
         userRepository.updateUserRole(username, newRole);
+    }
+
+    @Override
+    public User findByUsernameAndGetToken(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Username does not exist"));
+
+        String jwt = jwtProvider.generateToken(user);
+        user.setToken(jwt);
+        return user;
     }
 }
