@@ -54,10 +54,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                         authorizationManagerRequestMatcherRegistry
                                 .requestMatchers("/api/auth/sign-in", "/api/auth/sign-up").permitAll()
-                                .requestMatchers("/gateway/listing").permitAll()
-                                .requestMatchers("/gateway/listing/**").hasRole(Role.ADMIN.name())
-                                .anyRequest().authenticated());
-
+                                .requestMatchers(HttpMethod.GET, "/gateway/listing").permitAll()
+                                .requestMatchers("/gateway/listing/**").hasRole(Role.ADMIN.name()));
 
         return http.build();
     }
