@@ -8,7 +8,7 @@ import java.util.List;
 @FeignClient(
         value = "listing-service",
         path = "/api/listing",
-        url = "&{listing.service.url}",
+        url = "${listing.service.url}",
         configuration = FeignConfiguration.class
 )
 public interface ListingServiceRequest {

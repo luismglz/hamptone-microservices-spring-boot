@@ -47,25 +47,17 @@ public class SecurityConfig {
         http.cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authenticationManager(authenticationManager)
-                .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
+                .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http
-                .securityMatcher("/api/auth/sign-in", "/api/auth/sign-up")
-                .authorizeHttpRequests((authorizeConfig) -> authorizeConfig
-                        .anyRequest()
-                        .permitAll())
-                .securityMatcher("/gateway/listing")
-                .authorizeHttpRequests((authorizeConfig) -> authorizeConfig
-                        .requestMatchers(HttpMethod.GET)
-                        .permitAll())
-                .securityMatcher("/gateway/listing/**")
-                .authorizeHttpRequests((authorizeConfig) -> authorizeConfig
-                        .anyRequest().hasRole(Role.ADMIN.name())
-                        .anyRequest().authenticated()
-                )
-                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .authenticationManager(authenticationManager);
+                .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
+                        authorizationManagerRequestMatcherRegistry
+                                .requestMatchers("/api/auth/sign-in", "/api/auth/sign-up").permitAll()
+                                .requestMatchers("/gateway/listing").permitAll()
+                                .requestMatchers("/gateway/listing/**").hasRole(Role.ADMIN.name())
+                                .anyRequest().authenticated());
+
 
         return http.build();
     }
